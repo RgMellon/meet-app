@@ -10,6 +10,7 @@ import MeetappController from './app/controllers/MeetappController';
 import SubscriberController from './app/controllers/SubscriberController';
 
 import authMiddleware from './app/middleware/auth';
+import FilterMeetupController from './app/controllers/FilterMeetupController';
 
 const routes = new Router();
 const upload = multer(multerConfig);
@@ -29,6 +30,9 @@ routes.get('/meetapp/users', MeetappController.index);
 routes.put('/meetapp/:id', MeetappController.update);
 routes.delete('/meetapp/:id', MeetappController.delete);
 
+routes.get('/dates/meetups', FilterMeetupController.index);
+
 routes.post('/subscriber/:id/meetapp', SubscriberController.store);
+routes.get('/subscriber', SubscriberController.index);
 
 export default routes;

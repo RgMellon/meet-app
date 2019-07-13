@@ -1,9 +1,34 @@
 import { isAfter } from 'date-fns';
+import { Op } from 'sequelize';
+
 import Meetapp from '../models/Meetapp';
 import Subscriber from '../models/Subscriber';
 import User from '../models/User';
 
+import WarnNewSubscriber from '../Jobs/WarnNewSubscriber';
+import Queue from '../../lib/Queue';
+
 class SubscriberController {
+  async index(req, res) {
+    const meetups = await User.findByPk(req.userId, {
+      include: [
+        {
+          where: {
+            date: { [Op.gt]: new Date() },
+          },
+          order: ['date'],
+          model: Meetapp,
+          as: 'meetapps',
+
+          attributes: ['title', 'desc', 'location', 'date'],
+          through: { attributes: [] },
+        },
+      ],
+    });
+
+    return res.json(meetups);
+  }
+
   async store(req, res) {
     const { id } = req.params;
 
@@ -14,6 +39,10 @@ class SubscriberController {
           as: 'subscribers',
           attributes: ['id', 'name'],
           through: { attributes: ['createdAt'], as: 'subscriber' },
+        },
+        {
+          model: User,
+          as: 'user',
         },
       ],
     });
@@ -55,6 +84,14 @@ class SubscriberController {
         error: 'You cant subbscriber in two meetup in the same time',
       });
     }
+
+    /**
+     *  Avisa que existe um novo inscrito no meetup
+     */
+
+    await Queue.add(WarnNewSubscriber.key, {
+      meetup,
+    });
 
     const subscriber = await Subscriber.create({
       user_id: req.userId,
