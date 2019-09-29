@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 
 import Meetap from '../models/Meetapp';
 import User from '../models/User';
+import File from '../models/File';
 
 class FilterMeetupController {
   async index(req, res) {
@@ -22,8 +23,13 @@ class FilterMeetupController {
           as: 'user',
           attributes: ['name', 'email'],
         },
+        {
+          model: File,
+          as: 'image',
+          attributes: ['url', 'name', 'path'],
+        },
       ],
-      attributes: ['title', 'desc', 'date'],
+      attributes: ['title', 'desc', 'date', 'location', 'id'],
       order: ['date'],
     });
 

@@ -8,7 +8,7 @@ import authConfig from '../../config/authConfig';
 class SessionController {
   async store(req, res) {
     const schema = yup.object().shape({
-      name: yup.string().required(),
+      // name: yup.string().required(),
       email: yup
         .string()
         .email()
@@ -29,7 +29,8 @@ class SessionController {
 
     if (!user) return res.status(401).json({ error: 'Users not found' });
 
-    if (!(await user.check(password))) return res.status(401).json({ error: 'password does not match' });
+    if (!(await user.check(password)))
+      return res.status(401).json({ error: 'password does not match' });
 
     const { id, name } = user;
 

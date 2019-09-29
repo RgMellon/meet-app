@@ -46,10 +46,14 @@ class UserController {
       password: yup
         .string()
         .min(6)
-        .when('oldPassword', (oldPassword, field) => (oldPassword ? field.required() : field)),
+        .when('oldPassword', (oldPassword, field) =>
+          oldPassword ? field.required() : field
+        ),
       confirmPassword: yup
         .string()
-        .when('password', (password, field) => (password ? field.required().oneOf([yup.ref('password')]) : field)),
+        .when('password', (password, field) =>
+          password ? field.required().oneOf([yup.ref('password')]) : field
+        ),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -75,7 +79,6 @@ class UserController {
     const { id, name } = await user.update(req.body);
 
     return res.json({ id, name, email });
-    // if( email)
   }
 }
 

@@ -34,5 +34,6 @@ routes.get('/dates/meetups', FilterMeetupController.index);
 
 routes.post('/subscriber/:id/meetapp', SubscriberController.store);
 routes.get('/subscriber', SubscriberController.index);
+routes.delete('/subscriber/:id', SubscriberController.delete);
 
 export default routes;

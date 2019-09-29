@@ -3,18 +3,22 @@ import * as yup from 'yup';
 import { isBefore, startOfHour } from 'date-fns';
 import Meetapp from '../models/Meetapp';
 import User from '../models/User';
-// import pt from 'date-fns/locale/pt';
+import File from '../models/File';
 
 class MeetappController {
   async index(req, res) {
     const meetappCreatedByUser = await Meetapp.findAll({
       where: { user_id: req.userId },
-      attributes: ['title', 'desc', 'date'],
+      attributes: ['title', 'desc', 'date', 'id', 'location'],
       include: [
         {
           model: User,
           as: 'user',
           attributes: ['name', 'email'],
+        },
+        {
+          model: File,
+          as: 'image',
         },
       ],
     });
@@ -36,9 +40,7 @@ class MeetappController {
       return res.status(401).json({ error: 'Validations fails ' });
     }
 
-    const {
-      date, user_id, image_id, title, location, desc,
-    } = req.body;
+    const { date, user_id, image_id, title, location, desc } = req.body;
 
     const hourStart = startOfHour(date);
 
@@ -75,7 +77,8 @@ class MeetappController {
 
     if (isBefore(hourStart, new Date())) {
       return res.status(401).json({
-        error: 'You cant update meetap on past date or with an hour of diference',
+        error:
+          'You cant update meetap on past date or with an hour of diference',
       });
     }
 
@@ -98,7 +101,8 @@ class MeetappController {
 
     if (isBefore(hourStart, new Date())) {
       return res.status(401).json({
-        error: 'You cant delet meetap on past date or with an hour of diference',
+        error:
+          'You cant delet meetap on past date or with an hour of diference',
       });
     }
 
